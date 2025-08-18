@@ -46,41 +46,6 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
-
-          {/* {!isLoading && user ? (
-            <>
-              <Link href="/dashboard" className="hover:text-blue-600">
-                Dashboard
-              </Link>
-              {user?.role === 'admin' && (
-                <Link href="/dashboard/trainers" className="hover:text-blue-600">
-                  Trainers
-                </Link>
-              )}
-              <Link href="/dashboard/schedules" className="hover:text-blue-600">
-                Classes
-              </Link>
-              <Link href="/dashboard/bookings" className="hover:text-blue-600">
-                My Bookings
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="hover:text-blue-600">
-                Login
-              </Link>
-              <Link href="/register" className="hover:text-blue-600">
-                Register
-              </Link>
-            </>
-          )} */}
-
           {!isLoading && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -97,7 +62,18 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className='w-56' align='end' forceMount>
-                <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.push(
+                      `/dashboard/${
+                        user?.role === "super_admin" || user?.role === "admin"
+                          ? "admin"
+                          : user?.role === "trainer"
+                          ? "trainer"
+                          : "trainee"
+                      }`
+                    )
+                  }>
                   Dashboard
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleLogout()}>

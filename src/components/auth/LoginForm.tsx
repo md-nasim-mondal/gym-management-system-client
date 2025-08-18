@@ -33,11 +33,11 @@ export default function LoginForm() {
     if (isAuthenticated && user) {
       toast.success('Login successful!');
       if (user.role === 'admin' || user.role === 'super_admin') {
-        router.push('/admin');
+        router.push('/dashboard/admin');
       } else if (user.role === 'trainer') {
-        router.push('/trainer/dashboard');
+        router.push('/dashboard/trainer');
       } else {
-        router.push('/trainee/dashboard');
+        router.push('/dashboard/trainee');
       }
     }
   }, [isAuthenticated, user, router]);

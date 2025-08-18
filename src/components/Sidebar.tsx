@@ -36,29 +36,57 @@ export default function Sidebar({ role, user }: SidebarProps) {
     }
   };
   const adminLinks = [
-    { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={18} /> },
-    { name: "Members", href: "/admin/members", icon: <Users size={18} /> },
-    { name: "Trainers", href: "/admin/trainers", icon: <BookUser size={18} /> },
-    { name: "Classes", href: "/admin/classes", icon: <Dumbbell size={18} /> },
-    { name: "Schedule", href: "/admin/schedule", icon: <Calendar size={18} /> },
-    { name: "Settings", href: "/admin/settings", icon: <Settings size={18} /> },
+    {
+      name: "Dashboard",
+      href: "/dashboard/admin",
+      icon: <LayoutDashboard size={18} />,
+    },
+    {
+      name: "Members",
+      href: "/dashboard/admin/members",
+      icon: <Users size={18} />,
+    },
+    {
+      name: "Trainers",
+      href: "/dashboard/admin/trainers",
+      icon: <BookUser size={18} />,
+    },
+    {
+      name: "Classes",
+      href: "/dashboard/admin/classes",
+      icon: <Dumbbell size={18} />,
+    },
+    {
+      name: "Schedule",
+      href: "/dashboard/admin/schedule",
+      icon: <Calendar size={18} />,
+    },
+    {
+      name: "Settings",
+      href: "/dashboard/admin/settings",
+      icon: <Settings size={18} />,
+    },
   ];
 
   const trainerLinks = [
     {
       name: "Dashboard",
-      href: "/trainer",
+      href: "/dashboard/trainer",
       icon: <LayoutDashboard size={18} />,
     },
-    { name: "Clients", href: "/trainer/clients", icon: <Users size={18} /> },
+    {
+      name: "Clients",
+      href: "/dashboard/trainer/clients",
+      icon: <Users size={18} />,
+    },
     {
       name: "Workouts",
-      href: "/trainer/workouts",
+      href: "/dashboard/trainer/workouts",
       icon: <Dumbbell size={18} />,
     },
     {
       name: "Schedule",
-      href: "/trainer/schedule",
+      href: "dashboard/trainer/schedule",
       icon: <Calendar size={18} />,
     },
   ];
