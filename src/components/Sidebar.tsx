@@ -1,30 +1,25 @@
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  Users,
-  Calendar,
-  Settings,
-  Dumbbell,
-  ClipboardList,
-  BookUser,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppDispatch } from "@/redux/hooks";
 import { logoutUser } from "@/redux/features/auth/authSlice";
 import { useRouter } from "next/navigation";
+import { FaCalendarAlt, FaHome, FaSignOutAlt, FaUser, FaUsers } from "react-icons/fa";
+import { MdClass } from "react-icons/md";
 
 type SidebarProps = {
-  role: "admin" | "trainer" | "trainee";
-  user?: {
+  user: {
+    role: string;
     name: string;
     email: string;
-    image?: string;
+    picture?: string;
   };
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (isOpen: boolean) => void;
 };
 
-export default function Sidebar({ role, user }: SidebarProps) {
+export default function Sidebar({user,
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: SidebarProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const handleLogout = async () => {
@@ -35,144 +30,147 @@ export default function Sidebar({ role, user }: SidebarProps) {
       console.error("Logout failed:", error);
     }
   };
-  const adminLinks = [
-    {
-      name: "Dashboard",
-      href: "/dashboard/admin",
-      icon: <LayoutDashboard size={18} />,
-    },
-    {
-      name: "Members",
-      href: "/dashboard/admin/members",
-      icon: <Users size={18} />,
-    },
-    {
-      name: "Trainers",
-      href: "/dashboard/admin/trainers",
-      icon: <BookUser size={18} />,
-    },
-    {
-      name: "Classes",
-      href: "/dashboard/admin/classes",
-      icon: <Dumbbell size={18} />,
-    },
-    {
-      name: "Schedule",
-      href: "/dashboard/admin/schedule",
-      icon: <Calendar size={18} />,
-    },
-    {
-      name: "Settings",
-      href: "/dashboard/admin/settings",
-      icon: <Settings size={18} />,
-    },
-  ];
+  
 
-  const trainerLinks = [
-    {
-      name: "Dashboard",
-      href: "/dashboard/trainer",
-      icon: <LayoutDashboard size={18} />,
-    },
-    {
-      name: "Clients",
-      href: "/dashboard/trainer/clients",
-      icon: <Users size={18} />,
-    },
-    {
-      name: "Workouts",
-      href: "/dashboard/trainer/workouts",
-      icon: <Dumbbell size={18} />,
-    },
-    {
-      name: "Schedule",
-      href: "dashboard/trainer/schedule",
-      icon: <Calendar size={18} />,
-    },
-  ];
+  // Define menu items based on user role
+  const getMenuItems = () => {
+    if (!user) return [];
 
-  const traineeLinks = [
-    {
-      name: "Dashboard",
-      href: "/trainee",
-      icon: <LayoutDashboard size={18} />,
-    },
-    {
-      name: "Workouts",
-      href: "/trainee/workouts",
-      icon: <Dumbbell size={18} />,
-    },
-    {
-      name: "Progress",
-      href: "/trainee/progress",
-      icon: <ClipboardList size={18} />,
-    },
-    {
-      name: "Schedule",
-      href: "/trainee/schedule",
-      icon: <Calendar size={18} />,
-    },
-  ];
+    const commonItems = [
+      {
+        name: "Profile",
+        path: `/dashboard/profile`,
+        icon: <FaUser className='w-5 h-5' />,
+      },
+    ];
 
-  const links =
-    role === "admin"
-      ? adminLinks
-      : role === "trainer"
-      ? trainerLinks
-      : traineeLinks;
+    if (user.role === "admin" || user.role === "super_admin") {
+      return [
+        {
+          name: "Dashboard",
+          path: "/dashboard/admin",
+          icon: <FaHome className='w-5 h-5' />,
+        },
+        {
+          name: "Manage Users",
+          path: "/dashboard/admin/users",
+          icon: <FaUsers className='w-5 h-5' />,
+        },
+        {
+          name: "Manage Classes",
+          path: "/dashboard/admin/classes",
+          icon: <MdClass className='w-5 h-5' />,
+        },
+        ...commonItems,
+      ];
+    } else if (user.role === "trainer") {
+      return [
+        {
+          name: "Dashboard",
+          path: "/dashboard/trainer",
+          icon: <FaHome className='w-5 h-5' />,
+        },
+        {
+          name: "My Classes",
+          path: "/dashboard/trainer/classes",
+          icon: <MdClass className='w-5 h-5' />,
+        },
+        {
+          name: "Schedule",
+          path: "/dashboard/trainer/schedule",
+          icon: <FaCalendarAlt className='w-5 h-5' />,
+        },
+        ...commonItems,
+      ];
+    } else if (user.role === "trainee") {
+      return [
+        {
+          name: "Dashboard",
+          path: "/dashboard/trainee",
+          icon: <FaHome className='w-5 h-5' />,
+        },
+        {
+          name: "Book Class",
+          path: "/dashboard/trainee/booking",
+          icon: <MdClass className='w-5 h-5' />,
+        },
+        {
+          name: "My Bookings",
+          path: "/dashboard/trainee/my-bookings",
+          icon: <FaCalendarAlt className='w-5 h-5' />,
+        },
+        ...commonItems,
+      ];
+    }
+
+    return commonItems;
+  };
+
+  const menuItems = getMenuItems();
 
   return (
-    <aside className='hidden md:flex md:flex-col md:w-64 bg-background border-r'>
-      <div className='p-4 border-b'>
-        <h2 className='text-xl font-semibold'>
-          {role === "admin"
-            ? "Admin"
-            : role === "trainer"
-            ? "Trainer"
-            : "Trainee"}{" "}
-          Dashboard
-        </h2>
+    <div
+      className={`${
+        isSidebarOpen ? "w-64" : "w-20"
+      } bg-gray-800 text-white transition-all duration-300 ease-in-out`}>
+      <div className='p-4 flex items-center justify-between'>
+        {isSidebarOpen && (
+          <h2 onClick={() => router.push("/")} className='text-xl font-bold'>
+            FitPro
+          </h2>
+        )}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className='p-2 rounded-md hover:bg-gray-700'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            className='h-6 w-6'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'>
+            {isSidebarOpen ? (
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M11 19l-7-7 7-7m8 14l-7-7 7-7'
+              />
+            ) : (
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M4 6h16M4 12h16m-7 6h7'
+              />
+            )}
+          </svg>
+        </button>
       </div>
 
-      <nav className='flex-1 p-4 space-y-1'>
-        {links.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-              link.href === `/${role}` && "bg-accent text-accent-foreground"
-            )}>
-            {link.icon}
-            <span>{link.name}</span>
-          </Link>
-        ))}
+      <nav className='mt-6'>
+        <ul>
+          {menuItems.map((item, index) => (
+            <li key={index} className='mb-2'>
+              <Link
+                href={item.path}
+                className='flex items-center px-4 py-3 hover:bg-gray-700 rounded-md transition-colors'>
+                <span className='mr-3'>{item.icon}</span>
+                {isSidebarOpen && <span>{item.name}</span>}
+              </Link>
+            </li>
+          ))}
+          <li className='mb-2'>
+            <button
+              onClick={handleLogout}
+              className='w-full flex items-center px-4 py-3 hover:bg-gray-700 rounded-md transition-colors text-red-400'>
+              <span className='mr-3'>
+                <FaSignOutAlt className='w-5 h-5' />
+              </span>
+              {isSidebarOpen && <span>Logout</span>}
+            </button>
+          </li>
+        </ul>
       </nav>
-
-      <div className='p-4 border-t'>
-        <div className='flex items-center gap-3 mb-4'>
-          <Avatar className='h-8 w-8'>
-            <AvatarImage src={user?.image} />
-            <AvatarFallback>
-              {user?.name
-                ?.split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-          <div className='text-sm'>
-            <p className='font-medium'>{user?.name}</p>
-            <p className='text-muted-foreground'>{user?.email}</p>
-          </div>
-        </div>
-        <Button
-          onClick={() => handleLogout()}
-          variant='ghost'
-          className='w-full justify-start text-sm'>
-          <Settings size={16} className='mr-2' />
-          Sign Out
-        </Button>
-      </div>
-    </aside>
+    </div>
   );
 }
