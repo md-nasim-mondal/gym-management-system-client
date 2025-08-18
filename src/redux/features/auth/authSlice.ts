@@ -13,6 +13,7 @@ interface User {
 
 interface AuthState {
   user: User | null;
+  
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -144,6 +145,7 @@ export const updateProfile = createAsyncThunk(
     profileData: {
       name?: string;
       phone?: string;
+      role?: string;
       address?: string;
       picture?: string;
     },

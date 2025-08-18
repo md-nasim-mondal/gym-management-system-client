@@ -11,10 +11,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
+import { logoutUser } from "@/redux/features/auth/authSlice";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+  const { user, isLoading } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <header className='bg-background sticky top-0 z-50 border-b w-full'>
@@ -25,7 +38,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className='hidden md:flex items-center gap-6'>
-          {NAV_LINKS.map((link) => (
+          {NAV_LINKS?.map((link) => (
             <Link
               key={link.name}
               href={link.href}
@@ -34,22 +47,60 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {isLoggedIn ? (
+          {/* {!isLoading && user ? (
+            <>
+              <Link href="/dashboard" className="hover:text-blue-600">
+                Dashboard
+              </Link>
+              {user?.role === 'admin' && (
+                <Link href="/dashboard/trainers" className="hover:text-blue-600">
+                  Trainers
+                </Link>
+              )}
+              <Link href="/dashboard/schedules" className="hover:text-blue-600">
+                Classes
+              </Link>
+              <Link href="/dashboard/bookings" className="hover:text-blue-600">
+                My Bookings
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="hover:text-blue-600">
+                Login
+              </Link>
+              <Link href="/register" className="hover:text-blue-600">
+                Register
+              </Link>
+            </>
+          )} */}
+
+          {!isLoading && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant='ghost'
                   className='relative h-8 w-8 rounded-full'>
                   <Avatar className='h-8 w-8'>
-                    <AvatarImage src='/avatars/user.png' alt='User' />
-                    <AvatarFallback>U</AvatarFallback>
+                    <AvatarImage src={user?.picture} alt={user?.name} />
+
+                    <AvatarFallback>
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className='w-56' align='end' forceMount>
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleLogout()}>
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -59,10 +110,10 @@ export default function Navbar() {
               <Button
                 variant='outline'
                 size='sm'
-                onClick={() => setIsLoggedIn(true)}>
+                onClick={() => router.push("/login")}>
                 Login
               </Button>
-              <Button size='sm' onClick={() => setIsLoggedIn(true)}>
+              <Button size='sm' onClick={() => router.push("/register")}>
                 Sign Up
               </Button>
             </div>
@@ -98,7 +149,7 @@ export default function Navbar() {
                 className='w-full'
                 size='sm'
                 onClick={() => {
-                  setIsLoggedIn(true);
+                  router.push("/login");
                   setIsOpen(false);
                 }}>
                 Login
@@ -107,7 +158,7 @@ export default function Navbar() {
                 className='w-full'
                 size='sm'
                 onClick={() => {
-                  setIsLoggedIn(true);
+                  router.push("/register");
                   setIsOpen(false);
                 }}>
                 Sign Up

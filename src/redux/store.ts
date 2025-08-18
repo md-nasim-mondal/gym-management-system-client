@@ -1,15 +1,15 @@
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './features/auth/authSlice';
-import scheduleReducer from './features/schedule/scheduleSlice';
-import bookingReducer from './features/booking/bookingSlice';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { combineReducers } from '@reduxjs/toolkit';
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./features/auth/authSlice";
+import scheduleReducer from "./features/schedule/scheduleSlice";
+import bookingReducer from "./features/booking/bookingSlice";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import { combineReducers } from "@reduxjs/toolkit";
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['auth'] // শুধুমাত্র auth স্টেট পারসিস্ট করবে
+  whitelist: ["auth"], // শুধুমাত্র auth স্টেট পারসিস্ট করবে
 };
 
 const rootReducer = combineReducers({
@@ -25,7 +25,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
     }),
 });

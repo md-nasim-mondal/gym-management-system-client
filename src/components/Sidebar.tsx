@@ -11,6 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAppDispatch } from "@/redux/hooks";
+import { logoutUser } from "@/redux/features/auth/authSlice";
+import { useRouter } from "next/navigation";
 
 type SidebarProps = {
   role: "admin" | "trainer" | "trainee";
@@ -22,6 +25,16 @@ type SidebarProps = {
 };
 
 export default function Sidebar({ role, user }: SidebarProps) {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   const adminLinks = [
     { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={18} /> },
     { name: "Members", href: "/admin/members", icon: <Users size={18} /> },
@@ -88,7 +101,7 @@ export default function Sidebar({ role, user }: SidebarProps) {
             ? "Admin"
             : role === "trainer"
             ? "Trainer"
-            : "Member"}{" "}
+            : "Trainee"}{" "}
           Dashboard
         </h2>
       </div>
@@ -124,15 +137,13 @@ export default function Sidebar({ role, user }: SidebarProps) {
             <p className='text-muted-foreground'>{user?.email}</p>
           </div>
         </div>
-        <form>
-          <Button
-            type='submit'
-            variant='ghost'
-            className='w-full justify-start text-sm'>
-            <Settings size={16} className='mr-2' />
-            Sign Out
-          </Button>
-        </form>
+        <Button
+          onClick={() => handleLogout()}
+          variant='ghost'
+          className='w-full justify-start text-sm'>
+          <Settings size={16} className='mr-2' />
+          Sign Out
+        </Button>
       </div>
     </aside>
   );
