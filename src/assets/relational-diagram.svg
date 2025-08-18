@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <!-- Styles -->
+  <style>
+    .entity {
+      fill: #f5f5f5;
+      stroke: #333;
+      stroke-width: 2;
+    }
+    .entity-title {
+      fill: #333;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .entity-attribute {
+      fill: #333;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+    .primary-key {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .relationship {
+      stroke: #666;
+      stroke-width: 2;
+      fill: none;
+    }
+    .relationship-text {
+      fill: #333;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+    .cardinality {
+      fill: #333;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Gym Management System - Relational Diagram</text>
+
+  <!-- User Entity -->
+  <rect x="100" y="100" width="200" height="180" rx="5" ry="5" class="entity" />
+  <text x="200" y="125" text-anchor="middle" class="entity-title">User</text>
+  <line x1="100" y1="135" x2="300" y2="135" stroke="#333" stroke-width="1" />
+  <text x="110" y="155" class="entity-attribute primary-key">_id</text>
+  <text x="110" y="175" class="entity-attribute">name</text>
+  <text x="110" y="195" class="entity-attribute">email</text>
+  <text x="110" y="215" class="entity-attribute">password</text>
+  <text x="110" y="235" class="entity-attribute">phone</text>
+  <text x="110" y="255" class="entity-attribute">address</text>
+  <text x="110" y="275" class="entity-attribute">role (admin/trainer/trainee)</text>
+
+  <!-- Schedule Entity -->
+  <rect x="700" y="100" width="200" height="180" rx="5" ry="5" class="entity" />
+  <text x="800" y="125" text-anchor="middle" class="entity-title">Schedule</text>
+  <line x1="700" y1="135" x2="900" y2="135" stroke="#333" stroke-width="1" />
+  <text x="710" y="155" class="entity-attribute primary-key">_id</text>
+  <text x="710" y="175" class="entity-attribute">title</text>
+  <text x="710" y="195" class="entity-attribute">description</text>
+  <text x="710" y="215" class="entity-attribute">date</text>
+  <text x="710" y="235" class="entity-attribute">startTime</text>
+  <text x="710" y="255" class="entity-attribute">endTime</text>
+  <text x="710" y="275" class="entity-attribute">capacity</text>
+
+  <!-- Booking Entity -->
+  <rect x="400" y="400" width="200" height="200" rx="5" ry="5" class="entity" />
+  <text x="500" y="425" text-anchor="middle" class="entity-title">Booking</text>
+  <line x1="400" y1="435" x2="600" y2="435" stroke="#333" stroke-width="1" />
+  <text x="410" y="455" class="entity-attribute primary-key">_id</text>
+  <text x="410" y="475" class="entity-attribute">traineeId</text>
+  <text x="410" y="495" class="entity-attribute">scheduleId</text>
+  <text x="410" y="515" class="entity-attribute">status (confirmed/completed/cancelled)</text>
+  <text x="410" y="535" class="entity-attribute">bookingDate</text>
+  <text x="410" y="555" class="entity-attribute">cancelledAt</text>
+  <text x="410" y="575" class="entity-attribute">completedAt</text>
+  <text x="410" y="595" class="entity-attribute">feedback</text>
+
+  <!-- Relationships -->
+  <!-- User (Trainee) to Booking -->
+  <path d="M 200 280 L 200 500 L 400 500" class="relationship" />
+  <text x="220" y="400" class="relationship-text">makes</text>
+  <text x="190" y="290" class="cardinality">1</text>
+  <text x="390" y="500" class="cardinality">N</text>
+
+  <!-- User (Trainer) to Schedule -->
+  <path d="M 300 180 L 700 180" class="relationship" />
+  <text x="500" y="160" class="relationship-text">creates</text>
+  <text x="310" y="180" class="cardinality">1</text>
+  <text x="690" y="180" class="cardinality">N</text>
+
+  <!-- Schedule to Booking -->
+  <path d="M 800 280 L 800 550 L 600 550" class="relationship" />
+  <text x="720" y="530" class="relationship-text">has</text>
+  <text x="790" y="290" class="cardinality">1</text>
+  <text x="610" y="550" class="cardinality">N</text>
+
+  <!-- Legend -->
+  <rect x="700" y="650" width="250" height="100" rx="5" ry="5" fill="#f5f5f5" stroke="#333" stroke-width="1" />
+  <text x="825" y="670" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Legend</text>
+  <line x1="710" y1="680" x2="940" y2="680" stroke="#333" stroke-width="1" />
+  <text x="720" y="700" class="entity-attribute"><tspan class="primary-key">Underlined</tspan>: Primary Key</text>
+  <text x="720" y="720" class="entity-attribute">1: One</text>
+  <text x="720" y="740" class="entity-attribute">N: Many</text>
+</svg>

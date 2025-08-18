@@ -1,5 +1,4 @@
 'use client';
-
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -33,8 +32,8 @@ export default function LoginForm() {
   useEffect(() => {
     if (isAuthenticated && user) {
       toast.success('Login successful!');
-      if (user.role === 'admin') {
-        router.push('/admin/dashboard');
+      if (user.role === 'admin' || user.role === 'super_admin') {
+        router.push('/admin');
       } else if (user.role === 'trainer') {
         router.push('/trainer/dashboard');
       } else {

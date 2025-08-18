@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ReduxProvider } from '@/providers/ReduxProvider';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
+import ErrorHandler from '@/components/ErrorHandler';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -13,15 +14,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
         <ReduxProvider>
-          <Toaster position="top-center" />
-          {children}
+          <ErrorHandler>
+            {children}
+          </ErrorHandler>
+          <Toaster position="top-center" richColors />
         </ReduxProvider>
       </body>
     </html>
