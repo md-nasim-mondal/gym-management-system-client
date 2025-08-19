@@ -29,6 +29,7 @@ const TraineeProfile = () => {
   const onSubmit = async (data: any) => {
     try {
       await dispatch(updateProfile({
+        userId: user?._id || "",
         name: data.name,
         phone: data.phone,
         address: data.address

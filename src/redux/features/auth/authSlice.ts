@@ -13,7 +13,7 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  
+
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -27,7 +27,8 @@ const initialState: AuthState = {
 };
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  ` ${process.env.NEXT_PUBLIC_API_URL as string}/api/v1` ||
+  "http://localhost:8000/api/v1";
 
 export const registerUser = createAsyncThunk(
   "auth/register",
@@ -117,32 +118,11 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
-export const getCurrentUser = createAsyncThunk(
-  "auth/getCurrentUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${API_URL}/users/me`, {
-        withCredentials: true,
-      });
-      return response.data;
-    } catch (error: unknown) {
-      if (error instanceof Error && "response" in error) {
-        const axiosError = error as {
-          response?: { data?: { message?: string } };
-        };
-        return rejectWithValue(
-          axiosError.response?.data?.message || "Failed to get user"
-        );
-      }
-      return rejectWithValue("Failed to get user");
-    }
-  }
-);
-
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
   async (
     profileData: {
+      userId: string;
       name?: string;
       phone?: string;
       role?: string;
@@ -152,9 +132,10 @@ export const updateProfile = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      const { userId, ...rest } = profileData;
       const response = await axios.patch(
-        `${API_URL}/users/update-profile`,
-        profileData,
+        `${API_URL}/users/${userId}`,
+        {...rest},
         {
           withCredentials: true,
         }
@@ -224,21 +205,6 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     });
 
-    // Get current user
-    builder.addCase(getCurrentUser.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(getCurrentUser.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.user = action.payload.data;
-      state.isAuthenticated = true;
-    });
-    builder.addCase(getCurrentUser.rejected, (state) => {
-      state.isLoading = false;
-      state.user = null;
-      state.isAuthenticated = false;
-    });
-    
     // Update profile
     builder.addCase(updateProfile.pending, (state) => {
       state.isLoading = true;

@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
+import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import {
@@ -16,34 +14,28 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { fetchSchedules } from "@/redux/features/schedule/scheduleSlice";
-import {
-  bookClass,
-  fetchMyBookings,
-} from "@/redux/features/booking/bookingSlice";
+import { useGetSchedulesQuery } from "@/redux/api/scheduleApi";
+import { 
+  useGetMyBookingsQuery,
+  useBookClassMutation,
+  useCancelBookingMutation
+} from "@/redux/api/bookingApi";
 
 export default function BookingPage() {
-  const dispatch = useDispatch<AppDispatch>();
-  const { schedules, isLoading: scheduleLoading } = useSelector(
-    (state: RootState) => state.schedule
-  );
-  const { bookings, isLoading: bookingLoading } = useSelector(
-    (state: RootState) => state.booking
-  );
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
-  );
-  const [bookingInProgress, setBookingInProgress] = useState<string | null>(
-    null
-  );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [bookingInProgress, setBookingInProgress] = useState<string | null>(null);
 
-  useEffect(() => {
-    dispatch(fetchSchedules());
-    dispatch(fetchMyBookings());
-  }, [dispatch]);
+  // RTK Query hooks
+  const { data: schedulesData, isLoading: scheduleLoading } = useGetSchedulesQuery();
+  const { data: bookingsData, isLoading: bookingLoading, refetch: refetchBookings } = useGetMyBookingsQuery();
+  const [bookClass] = useBookClassMutation();
+  const [cancelBooking] = useCancelBookingMutation();
+
+  const schedules = schedulesData?.data?.schedules || [];
+  const bookings = bookingsData?.data?.bookings || [];
 
   // Filter schedules for the selected date
-  const filteredSchedules = schedules.filter((schedule) => {
+  const filteredSchedules = schedules.filter((schedule: any) => {
     if (!selectedDate) return false;
     const scheduleDate = new Date(schedule.date);
     return (
@@ -55,12 +47,12 @@ export default function BookingPage() {
 
   // Check if a schedule is already booked
   const isAlreadyBooked = (scheduleId: string) => {
-    return bookings.some((booking) => booking.schedule._id === scheduleId);
+    return bookings.some((booking: any) => booking.schedule._id === scheduleId);
   };
 
   // Check if a schedule has time conflict with existing bookings
   const hasTimeConflict = (scheduleToCheck: any) => {
-    return bookings.some((booking) => {
+    return bookings.some((booking: any) => {
       // Skip cancelled bookings
       if (booking.status === "cancelled") return false;
 
@@ -94,14 +86,11 @@ export default function BookingPage() {
   const handleBookClass = async (scheduleId: string) => {
     setBookingInProgress(scheduleId);
     try {
-      await dispatch(bookClass(scheduleId)).unwrap();
+      await bookClass(scheduleId).unwrap();
       toast.success("Class booked successfully!");
-      // Refresh bookings
-      dispatch(fetchMyBookings());
-      // Refresh schedules to update availability
-      dispatch(fetchSchedules());
+      refetchBookings(); // Refresh bookings data
     } catch (error: any) {
-      toast.error(error.message || "Failed to book class");
+      toast.error(error.data?.message || "Failed to book class");
     } finally {
       setBookingInProgress(null);
     }
@@ -155,7 +144,7 @@ export default function BookingPage() {
                 </div>
               ) : (
                 <div className='space-y-4'>
-                  {filteredSchedules.map((schedule) => {
+                  {filteredSchedules.map((schedule: any) => {
                     const isBooked = isAlreadyBooked(schedule._id);
                     const hasConflict = hasTimeConflict(schedule);
                     const isFull =

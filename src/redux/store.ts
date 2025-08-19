@@ -1,33 +1,28 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/auth/authSlice";
-import scheduleReducer from "./features/schedule/scheduleSlice";
-import bookingReducer from "./features/booking/bookingSlice";
-import { persistStore, persistReducer } from "redux-persist";
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { combineReducers } from "@reduxjs/toolkit";
+import { baseApi } from "./api/baseApi";
 
 const persistConfig = {
-  key: "root",
+  key: "auth",
   storage,
-  whitelist: ["auth"], // শুধুমাত্র auth স্টেট পারসিস্ট করবে
+  whitelist: ["user", "isAuthenticated"], 
 };
 
-const rootReducer = combineReducers({
-  auth: authReducer,
-  schedule: scheduleReducer,
-  booking: bookingReducer,
-});
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, authReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: {
+    auth: persistedReducer,
+    [baseApi.reducerPath]: baseApi.reducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    }).concat(baseApi.middleware),
 });
 
 export const persistor = persistStore(store);
