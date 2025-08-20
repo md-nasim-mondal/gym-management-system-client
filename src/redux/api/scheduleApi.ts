@@ -11,7 +11,7 @@ interface Trainee {
 }
 
 interface Schedule {
-  _id: string;
+  _id?: string;
   date: string;
   startTime: string;
   endTime: string;
